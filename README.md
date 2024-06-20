@@ -1,1 +1,1 @@
-# 🤖🗺️  Google Places Crawler
+# 🤖🗺️  Google Places Scraper
