@@ -1,6 +1,11 @@
 # 🤖🗺️ Google Places Scraper
 
 A scraper written in python to extract Places data from Google Maps, compatible with rotating proxies. 
+
+**Required packages:**
+- 1
+- 2
+- 3
 <br><br>
 
 ## ⚡ How to install
@@ -10,7 +15,7 @@ A scraper written in python to extract Places data from Google Maps, compatible 
 
 <br>
 
-**2.** Install required repositories from *requirements.txt*
+**2.** Install required packages from *requirements.txt*
 
 ``pip install -r requirements.txt``
 <br><br><br>
