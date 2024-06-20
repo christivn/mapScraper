@@ -1,6 +1,6 @@
 # 🤖🗺️ Google Maps Scraper
 
-A scraper written in python to extract Places data from Google Maps, compatible with rotating proxies. 
+Headless browser scraper written in python to extract Places data from Google Maps, compatible with rotating proxies.
 
 **Required packages:**
 - 1
@@ -21,6 +21,19 @@ A scraper written in python to extract Places data from Google Maps, compatible 
 <br><br><br>
 
 ## ➡️ Example code
+``` python
+print(Hello World)
+```
+
+Output:
+``` json
+{
+  "output":"Hello World"
+}
+```
+<br>
+
+## 🌐 Rotating proxies - Example code
 ``` python
 print(Hello World)
 ```
