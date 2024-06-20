@@ -1,4 +1,4 @@
-# 🤖🗺️ Google Places Scraper
+# 🤖🗺️ Google Maps Scraper
 
 A scraper written in python to extract Places data from Google Maps, compatible with rotating proxies. 
 
