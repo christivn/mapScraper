@@ -1,11 +1,10 @@
 # 🤖🗺️ Google Maps Scraper
 
-Headless browser scraper written in python to extract Places data from Google Maps, compatible with rotating proxies.
+Headless browser scraper written in python to extract Places data from Google Maps.
 
 **Required packages:**
-- 1
-- 2
-- 3
+- requests_html
+- urllib
 <br><br>
 
 ## ⚡ How to install
@@ -13,7 +12,7 @@ Headless browser scraper written in python to extract Places data from Google Ma
 
 ``git clone https://github.com/christivn/Google-Places-Scraper.git``
 
-<br><br><br>
+<br><br>
 
 ## ➡️ Example code
 ``` python
@@ -25,7 +24,7 @@ results = placesCrawler.search(query)
 print(results)
 ```
 
-Example individual output:
+**Example output:**
 ``` json
 {
   "title": "OKEYMAS Fitness Club",
@@ -35,5 +34,17 @@ Example individual output:
   "phoneNumber": "744618706",
   "rating": 4.6,
   "ratingCount": 130
-}
+},
+{
+  "title": "Planet Gym Bormujos", 
+  "category": "Gym", 
+  "address": "Av Juan Carlos Rey de España nº 55 local, 41930 Bormujos, Sevilla", 
+  "website": "https://planetgymsport.es/bormujos/", 
+  "phoneNumber": "955528389", 
+  "rating": 4.5, 
+  "ratingCount": 149
+},
+...
+..
+.
 ```
