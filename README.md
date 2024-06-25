@@ -7,13 +7,6 @@ Headless browser scraper written in python to extract Places data from Google Ma
 - urllib
 <br><br>
 
-## ⚡ How to install
-**1.** Clone this repository inside your project:
-
-``git clone https://github.com/christivn/Google-Places-Scraper.git``
-
-<br><br>
-
 ## ➡️ Example code
 ``` python
 from mapScraper import placesCrawler
