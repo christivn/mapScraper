@@ -44,7 +44,7 @@ print(results)
   "rating": 4.5, 
   "ratingCount": 149
 },
-...
-..
-.
+{
+  "more..."
+}
 ```
