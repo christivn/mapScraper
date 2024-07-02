@@ -10,7 +10,7 @@ Headless browser scraper written in python to extract data from Google Maps Plac
 
 ## ➡️ Example code
 ``` python
-from mapScraper import placesCrawler
+from mapScraper import placesCrawlerV2
 
 query = "Gym in Seville Spain"
 results = placesCrawler.search(query)
