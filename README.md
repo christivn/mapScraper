@@ -1,50 +1,50 @@
 # 🤖🗺️ mapScraper
 
-Este proyecto es un **web scraper basado en Python** que utiliza un navegador sin interfaz gráfica para extraer información de lugares en Google Maps.
+This project is a **Python-based web scraper** that uses a headless browser to extract information about places from Google Maps.
 
 <br>
 
-## 🚀 Funcionalidades
-Con el **Google Maps Scraper** puedes obtener datos detallados sobre negocios y lugares específicos en Google Maps, tales como:
-- ID del lugar
-- Nombre del lugar
-- Categoría
-- Dirección completa
-- Número de teléfono
-- Dominio y URL asociados
-- Coordenadas (latitud y longitud)
-- Valoración promedio en estrellas
-- Número de reseñas
+## 🚀 Features
+With the **Google Maps Scraper**, you can obtain detailed data about businesses and specific places on Google Maps, such as:
+- Place ID
+- Place name
+- Category
+- Full address
+- Phone number
+- Associated domain and URL
+- Coordinates (latitude and longitude)
+- Average star rating
+- Number of reviews
 
 <br>
 
-## 📦 Paquetes requeridos
-Para ejecutar este scraper, necesitas los siguientes paquetes de Python:
-- `requests_html` - para realizar solicitudes HTML y renderizar contenido dinámico
-- `urllib` - para manipulación de URLs
-- `json` - para manejar datos estructurados en formato JSON
+## 📦 Required Packages
+To run this scraper, you'll need the following Python packages:
+- `requests_html` - for making HTML requests and rendering dynamic content
+- `urllib` - for URL handling
+- `json` - for managing structured data in JSON format
 
 <br>
 
-## ➡️ Ejemplo de código
-A continuación, un ejemplo básico de uso:
+## ➡️ Code Example
+Here's a basic usage example:
 
 ```python
 from mapScraper import placesCrawlerV2
 
-# Define tu consulta
+# Define your query
 query = "Gym in Seville Spain"
-# Lanza la búsqueda
+# Run the search
 results = placesCrawlerV2.search(query)
 
-# Muestra los resultados
+# Display the results
 print(results)
 ```
 
 <br>
 
-## 📋 Ejemplo de salida
-El scraper devuelve una lista en formato JSON con la información detallada de los lugares encontrados. Aquí tienes un ejemplo de salida:
+## 📋 Example Output
+The scraper returns a list in JSON format with detailed information about the found places. Here’s a sample output:
 
 ```json
 [
@@ -92,12 +92,12 @@ El scraper devuelve una lista en formato JSON con la información detallada de l
 
 <br>
 
-## 🛠️ Configuración y uso
-1. Clona este repositorio.
-2. Asegúrate de tener los paquetes necesarios instalados.
-3. Modifica `query` para personalizar tu búsqueda y ejecuta el script para ver los resultados.
+## 🛠️ Setup and Usage
+1. Clone this repository.
+2. Make sure you have the necessary packages installed.
+3. Modify the `query` to customize your search and run the script to see the results.
 
 <br>
 
-## ⚠️ Nota
-Este proyecto es solo para fines educativos y de investigación. Respeta las políticas de uso y términos de servicio de Google. 
+## ⚠️ Note
+This project is for educational and research purposes only. Please respect Google’s usage policies and terms of service.
