@@ -1,4 +1,4 @@
-# 🤖🗺️ Google Maps Scraper
+# 🤖🗺️ mapScraper
 
 Este proyecto es un **web scraper basado en Python** que utiliza un navegador sin interfaz gráfica para extraer información de lugares en Google Maps.
 
