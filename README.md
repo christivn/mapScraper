@@ -1,25 +1,52 @@
 # 🤖🗺️ Google Maps Scraper
 
-Headless browser scraper written in python to extract data from Google Maps Places.
+Este proyecto es un **web scraper basado en Python** que utiliza un navegador sin interfaz gráfica para extraer información de lugares en Google Maps.
 
-**Required packages:**
-- requests_html
-- urllib
-- json
-<br><br>
+<br>
 
-## ➡️ Example code
-``` python
+## 🚀 Funcionalidades
+Con el **Google Maps Scraper** puedes obtener datos detallados sobre negocios y lugares específicos en Google Maps, tales como:
+- ID del lugar
+- Nombre del lugar
+- Categoría
+- Dirección completa
+- Número de teléfono
+- Dominio y URL asociados
+- Coordenadas (latitud y longitud)
+- Valoración promedio en estrellas
+- Número de reseñas
+
+<br>
+
+## 📦 Paquetes requeridos
+Para ejecutar este scraper, necesitas los siguientes paquetes de Python:
+- `requests_html` - para realizar solicitudes HTML y renderizar contenido dinámico
+- `urllib` - para manipulación de URLs
+- `json` - para manejar datos estructurados en formato JSON
+
+<br>
+
+## ➡️ Ejemplo de código
+A continuación, un ejemplo básico de uso:
+
+```python
 from mapScraper import placesCrawlerV2
 
+# Define tu consulta
 query = "Gym in Seville Spain"
-results = placesCrawler.search(query)
+# Lanza la búsqueda
+results = placesCrawlerV2.search(query)
 
+# Muestra los resultados
 print(results)
 ```
 
-**Example output:**
-``` json
+<br>
+
+## 📋 Ejemplo de salida
+El scraper devuelve una lista en formato JSON con la información detallada de los lugares encontrados. Aquí tienes un ejemplo de salida:
+
+```json
 [
   {
     "id": "ChIJP0UWUA9sEg0RuJoxZuLavLs",
@@ -47,7 +74,6 @@ print(results)
     "stars": 4.8,
     "reviews": 2442
   },
-  # ... (other entries are similar)
   {
     "id": "ChIJNYda7WtsEg0RCC83FLkQK1Q",
     "title": "Hispanic Happiness Club",
@@ -63,3 +89,15 @@ print(results)
   }
 ]
 ```
+
+<br>
+
+## 🛠️ Configuración y uso
+1. Clona este repositorio.
+2. Asegúrate de tener los paquetes necesarios instalados.
+3. Modifica `query` para personalizar tu búsqueda y ejecuta el script para ver los resultados.
+
+<br>
+
+## ⚠️ Nota
+Este proyecto es solo para fines educativos y de investigación. Respeta las políticas de uso y términos de servicio de Google. 
