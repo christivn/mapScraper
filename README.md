@@ -1,8 +1,4 @@
-# 🤖🗺️ mapScraper
-
-This project is a **Python-based web scraper** that uses a headless browser to extract information about places from Google Maps.
-
-<br>
+![Header](https://github.com/christivn/mapScraper/blob/main/github-header-image.png?raw=true)
 
 ## 🚀 Features
 With the **Google Maps Scraper**, you can obtain detailed data about businesses and specific places on Google Maps, such as:
