@@ -96,6 +96,12 @@ python mapScraperX.py "coffee shops in London" --output-file "data/london_coffee
 # Comprehensive search with all parameters
 python mapScraperX.py "barber shops in Tokyo" --lang ja --country jp --limit 25 --output-file "data/tokyo_barbers.csv"
 ```
+### Complex query using file (for multiple queries)
+```bash
+# Comprehensive search using query list
+python mapScraperX.py --query-file qwuery_example.txt --lang ja --country jp --limit 25 --output-file "data/custom_name.csv"
+```
+
 
 ## 🌍 Supported Languages and Countries
 
