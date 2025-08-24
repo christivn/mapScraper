@@ -1,0 +1,10 @@
+# Restaurants
+
+restaurants close to Miami
+restaurants close to Vermont
+restaurants close to New Hampshire
+
+# Malls
+
+malls close to Hamptons
+malls close to Orlando
