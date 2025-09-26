@@ -1,10 +1,10 @@
 # Restaurants
 
-restaurants close to Miami
-restaurants close to Vermont
-restaurants close to New Hampshire
+Restaurants close to Marsella
+Restaurants close to Calais
+Restaurants close to Lima
 
-# Malls
+# Babershop
 
-malls close to Hamptons
-malls close to Orlando
+Barbershop close to eastend
+
