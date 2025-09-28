@@ -99,7 +99,18 @@ python mapScraperX.py "barber shops in Tokyo" --lang ja --country jp --limit 25 
 ### Complex query using file (for multiple queries)
 ```bash
 # Comprehensive search using query list
-python mapScraperX.py --query-file qwuery_example.txt --lang ja --country jp --limit 25 --output-file "data/custom_name.csv"
+python mapScraperX.py --queries-file qwuery_example.txt --lang ja --country jp --limit 25 --output-file "data/custom_name.csv"
+```
+
+### Concurrent query processing
+```bash
+# When requesting for more than one query (safe):
+python mapScraperX.py --queries-file qwuery_example.txt --lang en --country jp --limit 25 --output-file "data/custom_name.csv" --concurrent 2
+```
+
+```bash
+# When requesting for more than one query (fast but risky):
+python mapScraperX.py --queries-file qwuery_example.txt --lang en --country jp --limit 25 --output-file "data/custom_name.csv" --concurrent 5
 ```
 
 
