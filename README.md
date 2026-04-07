@@ -35,13 +35,8 @@ With the **Google Maps Scraper**, you can obtain detailed data about businesses 
 
 2. **Install required packages:**
    ```bash
-   pip install requests-html lxml[html_clean] urllib3
+   pip install aiohttp tqdm
    ```
-
-   > **Note:** If you encounter issues with `lxml`, try installing it separately:
-   > ```bash
-   > pip install lxml[html_clean]
-   > ```
 
 3. **Verify installation:**
    ```bash
@@ -157,30 +152,71 @@ The scraper generates a CSV file with the following columns:
 | `stars` | Average rating | `4.5` |
 | `reviews` | Number of reviews | `234` |
 
+## 🔧 What Changed (April 2026 Fix)
+
+Google permanently shut down the `/localservices/prolist` endpoint that this
+scraper originally used (it now returns **HTTP 410 Gone**).
+
+**What was changed:**
+- The scraper no longer targets `/localservices/prolist`. It now uses a
+  two-step approach:
+  1. `GET https://www.google.com/maps/search/{query}` — fetches the Maps SPA
+     page to extract an embedded canonical `pb=` search URL from the `<link>`
+     tag in `<head>`.
+  2. `GET https://www.google.com/search?tbm=map&...&pb=...` — fetches a
+     `)]}'`-prefixed JSON payload that contains the actual search results in a
+     nested array at `data[64]`.
+- JavaScript rendering via `requests-html` / pyppeteer is **no longer needed**.
+  Both requests are plain HTTP GETs; this makes the scraper faster and removes
+  a heavyweight dependency.
+- `requests-html` has been removed from `requirements.txt`. Only `aiohttp` and
+  `tqdm` are required now.
+- All extraction failures now log explicit error messages so failures are never
+  silent.
+
+**Known limitation:** The `tbm=map` JSON response does not include review
+counts. The `reviews` column in the output CSV will be empty. All other fields
+(id, title, category, address, phone, website, coordinates, stars) are fully
+populated.
+
+## 📦 Installation (Updated)
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/christivn/mapScraper.git
+   cd mapScraper
+   ```
+
+2. **Install required packages:**
+   ```bash
+   pip install aiohttp tqdm
+   ```
+
+3. **Verify installation:**
+   ```bash
+   python mapScraperX.py --help
+   ```
+
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **"No module named 'requests_html'"**
-   ```bash
-   pip install requests-html
-   ```
+1. **Empty results / "Could not find pb= search URL"**
+   - Google may be showing a consent or cookie wall for your IP/region.
+   - Try setting `--lang` and `--country` to match your actual locale.
+   - Check your internet connection.
 
-2. **lxml installation errors**
-   ```bash
-   pip install lxml[html_clean]
-   # or on some systems:
-   pip install --upgrade lxml
-   ```
+2. **"data[64] is missing"**
+   - Google may have updated the response structure again.
+   - Open an issue with the raw response logged at DEBUG level:
+     ```bash
+     python -c "import logging; logging.basicConfig(level=logging.DEBUG); \
+       import mapScraper.placesCrawlerV2 as c; c.search('test', 'en', 'us', 5)"
+     ```
 
 3. **Permission denied when creating output directory**
-   - Ensure you have write permissions in the target directory
-   - Try running with appropriate permissions or change the output path
-
-4. **Empty results**
-   - Check your internet connection
-   - Verify the search query is valid
-   - Try different language/country combinations
+   - Ensure you have write permissions in the target directory.
+   - Try running with appropriate permissions or change the output path.
 
 ## 📝 License
 
