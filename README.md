@@ -306,20 +306,19 @@ The scraper generates a CSV file with the following columns:
    - Verify the search query is valid
    - Try different language/country combinations
 
-## 🔄 Reason for Change
+## 🔄 Implementation Details
 
-This project was originally built using Selenium WebDriver for browser automation. While functional, it had several limitations:
+The scraper has been refactored to use the Google Places search URL instead of the local services listing, which is no longer available. 
 
-- **Performance**: Selenium is resource-intensive, requiring a full browser instance
-- **Reliability**: DOM changes in Google Maps frequently broke selectors
-- **Maintenance**: Browser driver compatibility issues required constant updates
-- **Speed**: Could not efficiently handle concurrent queries
+### How it works:
 
-The new implementation uses direct HTTP requests with async/await, providing:
+Search results are fetched directly from Google's Places tab:
+`https://www.google.com/search?q={query}&start={pagination}&udm=1&hl={lang}&gl={country}`
 
-- **Faster execution** (~10x improvement in most cases)
-- **Lower resource usage** (no browser required)
-- **Better reliability** through XPath-based parsing
+- The `udm=1` parameter opens the places tab in Google results directly.
+- The returned data is backed into HTML and scraped using reliable class names, IDs, and other patterns.
+- For results without phone numbers, a separate asynchronous call is made to `https://www.google.com/async/lcl_akp?q={query}&async=ludocids:{cid},_fmt:prog` using the location's `cid` to fetch missing phone numbers, complete addresses, and website links.
+- Fully asynchronous execution for maximum performance and efficiency.
 - **Three scraping modes** for different use cases:
   - `fast`: Quick results without phone fallback
   - `standard`: Balanced with phone fallback (default)
