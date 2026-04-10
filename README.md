@@ -15,7 +15,6 @@ With the **Google Maps Scraper**, you can obtain detailed data about businesses 
 - **Full address** - Complete location address
 - **Phone number** - Contact phone number
 - **Associated domain and URL** - Business website information
-- **Coordinates** - Latitude and longitude
 - **Average star rating** - Customer rating
 - **Number of reviews** - Total review count
 - **Customizable search parameters** - Language, country, result limit, and output filename
@@ -116,27 +115,152 @@ python mapScraperX.py --queries-file qwuery_example.txt --lang en --country jp -
 
 ## 🌍 Supported Languages and Countries
 
-### Common Language Codes
-- `en` - English
-- `es` - Spanish
-- `fr` - French
-- `de` - German
-- `it` - Italian
-- `pt` - Portuguese
-- `ja` - Japanese
-- `ko` - Korean
-- `zh` - Chinese
+The `--lang` flag maps to Google's `hl` parameter (interface language) and `--country` maps to `gl` (geolocation). Both are case-insensitive.
 
-### Common Country Codes
-- `us` - United States
-- `gb` - United Kingdom
-- `es` - Spain
-- `fr` - France
-- `de` - Germany
-- `it` - Italy
-- `jp` - Japan
-- `ca` - Canada
-- `au` - Australia
+### Language Codes (`--lang` / `hl`)
+
+| Code | Language | Code | Language | Code | Language |
+|------|----------|------|----------|------|----------|
+| `af` | Afrikaans | `ga` | Irish | `pa` | Punjabi |
+| `ak` | Akan | `gl` | Galician | `qu` | Quechua |
+| `sq` | Albanian | `ka` | Georgian | `ro` | Romanian |
+| `am` | Amharic | `de` | German | `rm` | Romansh |
+| `ar` | Arabic | `el` | Greek | `ru` | Russian |
+| `hy` | Armenian | `kl` | Greenlandic | `gd` | Scots Gaelic |
+| `az` | Azerbaijani | `gn` | Guarani | `sr` | Serbian |
+| `eu` | Basque | `gu` | Gujarati | `sh` | Serbo-Croatian |
+| `be` | Belarusian | `ht` | Haitian Creole | `st` | Sesotho |
+| `bem` | Bemba | `ha` | Hausa | `tn` | Setswana |
+| `bn` | Bengali | `haw` | Hawaiian | `sn` | Shona |
+| `bh` | Bihari | `he` | Hebrew | `sd` | Sindhi |
+| `bs` | Bosnian | `hi` | Hindi | `si` | Sinhalese |
+| `br` | Breton | `hu` | Hungarian | `sk` | Slovak |
+| `bg` | Bulgarian | `is` | Icelandic | `sl` | Slovenian |
+| `km` | Cambodian | `ig` | Igbo | `so` | Somali |
+| `ca` | Catalan | `id` | Indonesian | `es` | Spanish |
+| `chr` | Cherokee | `ia` | Interlingua | `es-419` | Spanish (Latin American) |
+| `ny` | Chichewa | `it` | Italian | `su` | Sundanese |
+| `zh-cn` | Chinese (Simplified) | `ja` | Japanese | `sw` | Swahili |
+| `zh-tw` | Chinese (Traditional) | `jw` | Javanese | `sv` | Swedish |
+| `co` | Corsican | `kn` | Kannada | `tg` | Tajik |
+| `hr` | Croatian | `kk` | Kazakh | `ta` | Tamil |
+| `cs` | Czech | `rw` | Kinyarwanda | `tt` | Tatar |
+| `da` | Danish | `rn` | Kirundi | `te` | Telugu |
+| `nl` | Dutch | `ko` | Korean | `th` | Thai |
+| `en` | English | `ku` | Kurdish | `ti` | Tigrinya |
+| `eo` | Esperanto | `ckb` | Kurdish (Sorani) | `to` | Tonga |
+| `et` | Estonian | `ky` | Kyrgyz | `tr` | Turkish |
+| `ee` | Ewe | `lo` | Laothian | `tk` | Turkmen |
+| `fo` | Faroese | `la` | Latin | `uk` | Ukrainian |
+| `tl` | Filipino | `lv` | Latvian | `ur` | Urdu |
+| `fi` | Finnish | `ln` | Lingala | `uz` | Uzbek |
+| `fr` | French | `lt` | Lithuanian | `vi` | Vietnamese |
+| `fy` | Frisian | `lg` | Luganda | `cy` | Welsh |
+| `gaa` | Ga | `mk` | Macedonian | `wo` | Wolof |
+| | | `mg` | Malagasy | `xh` | Xhosa |
+| | | `ms` | Malay | `yi` | Yiddish |
+| | | `ml` | Malayalam | `yo` | Yoruba |
+| | | `mt` | Maltese | `zu` | Zulu |
+| | | `mi` | Maori | | |
+| | | `mr` | Marathi | | |
+| | | `mn` | Mongolian | | |
+| | | `my` | Myanmar (Burmese) | | |
+| | | `ne` | Nepali | | |
+| | | `no` | Norwegian | | |
+| | | `nn` | Norwegian (Nynorsk) | | |
+| | | `oc` | Occitan | | |
+| | | `or` | Oriya | | |
+| | | `om` | Oromo | | |
+| | | `ps` | Pashto | | |
+| | | `fa` | Persian | | |
+| | | `pl` | Polish | | |
+| | | `pt` | Portuguese | | |
+| | | `pt-br` | Portuguese (Brazil) | | |
+| | | `pt-pt` | Portuguese (Portugal) | | |
+
+### Country Codes (`--country` / `gl`)
+
+| Code | Country | Code | Country | Code | Country |
+|------|---------|------|---------|------|---------|
+| `af` | Afghanistan | `ge` | Georgia | `ni` | Nicaragua |
+| `al` | Albania | `de` | Germany | `ne` | Niger |
+| `dz` | Algeria | `gh` | Ghana | `ng` | Nigeria |
+| `as` | American Samoa | `gi` | Gibraltar | `no` | Norway |
+| `ad` | Andorra | `gr` | Greece | `om` | Oman |
+| `ao` | Angola | `gl` | Greenland | `pk` | Pakistan |
+| `ai` | Anguilla | `gd` | Grenada | `pw` | Palau |
+| `ag` | Antigua and Barbuda | `gp` | Guadeloupe | `ps` | Palestinian Territory |
+| `ar` | Argentina | `gu` | Guam | `pa` | Panama |
+| `am` | Armenia | `gt` | Guatemala | `pg` | Papua New Guinea |
+| `aw` | Aruba | `gg` | Guernsey | `py` | Paraguay |
+| `au` | Australia | `gn` | Guinea | `pe` | Peru |
+| `at` | Austria | `gw` | Guinea-Bissau | `ph` | Philippines |
+| `az` | Azerbaijan | `gy` | Guyana | `pn` | Pitcairn |
+| `bs` | Bahamas | `ht` | Haiti | `pl` | Poland |
+| `bh` | Bahrain | `va` | Vatican City | `pt` | Portugal |
+| `bd` | Bangladesh | `hn` | Honduras | `pr` | Puerto Rico |
+| `bb` | Barbados | `hk` | Hong Kong | `qa` | Qatar |
+| `by` | Belarus | `hu` | Hungary | `re` | Reunion |
+| `be` | Belgium | `is` | Iceland | `ro` | Romania |
+| `bz` | Belize | `in` | India | `ru` | Russian Federation |
+| `bj` | Benin | `id` | Indonesia | `rw` | Rwanda |
+| `bm` | Bermuda | `ir` | Iran | `sh` | Saint Helena |
+| `bt` | Bhutan | `iq` | Iraq | `kn` | Saint Kitts and Nevis |
+| `bo` | Bolivia | `ie` | Ireland | `lc` | Saint Lucia |
+| `ba` | Bosnia and Herzegovina | `im` | Isle of Man | `pm` | Saint Pierre and Miquelon |
+| `bw` | Botswana | `il` | Israel | `vc` | Saint Vincent and the Grenadines |
+| `br` | Brazil | `it` | Italy | `ws` | Samoa |
+| `bn` | Brunei | `jm` | Jamaica | `sm` | San Marino |
+| `bg` | Bulgaria | `jp` | Japan | `st` | Sao Tome and Principe |
+| `bf` | Burkina Faso | `je` | Jersey | `sa` | Saudi Arabia |
+| `bi` | Burundi | `jo` | Jordan | `sn` | Senegal |
+| `kh` | Cambodia | `kz` | Kazakhstan | `rs` | Serbia |
+| `cm` | Cameroon | `ke` | Kenya | `sc` | Seychelles |
+| `ca` | Canada | `ki` | Kiribati | `sl` | Sierra Leone |
+| `cv` | Cape Verde | `kp` | North Korea | `sg` | Singapore |
+| `ky` | Cayman Islands | `kr` | South Korea | `sk` | Slovakia |
+| `cf` | Central African Republic | `kw` | Kuwait | `si` | Slovenia |
+| `td` | Chad | `kg` | Kyrgyzstan | `sb` | Solomon Islands |
+| `cl` | Chile | `la` | Laos | `so` | Somalia |
+| `cn` | China | `lv` | Latvia | `za` | South Africa |
+| `co` | Colombia | `lb` | Lebanon | `es` | Spain |
+| `km` | Comoros | `ls` | Lesotho | `lk` | Sri Lanka |
+| `cg` | Congo | `lr` | Liberia | `sd` | Sudan |
+| `cd` | Congo (DRC) | `ly` | Libya | `sr` | Suriname |
+| `ck` | Cook Islands | `li` | Liechtenstein | `sz` | Eswatini |
+| `cr` | Costa Rica | `lt` | Lithuania | `se` | Sweden |
+| `ci` | Cote D'Ivoire | `lu` | Luxembourg | `ch` | Switzerland |
+| `hr` | Croatia | `mo` | Macao | `sy` | Syria |
+| `cu` | Cuba | `mk` | North Macedonia | `tw` | Taiwan |
+| `cy` | Cyprus | `mg` | Madagascar | `tj` | Tajikistan |
+| `cz` | Czech Republic | `mw` | Malawi | `tz` | Tanzania |
+| `dk` | Denmark | `my` | Malaysia | `th` | Thailand |
+| `dj` | Djibouti | `mv` | Maldives | `tl` | Timor-Leste |
+| `dm` | Dominica | `ml` | Mali | `tg` | Togo |
+| `do` | Dominican Republic | `mt` | Malta | `tk` | Tokelau |
+| `ec` | Ecuador | `mh` | Marshall Islands | `to` | Tonga |
+| `eg` | Egypt | `mq` | Martinique | `tt` | Trinidad and Tobago |
+| `sv` | El Salvador | `mr` | Mauritania | `tn` | Tunisia |
+| `gq` | Equatorial Guinea | `mu` | Mauritius | `tr` | Turkey |
+| `er` | Eritrea | `yt` | Mayotte | `tm` | Turkmenistan |
+| `ee` | Estonia | `mx` | Mexico | `tc` | Turks and Caicos Islands |
+| `et` | Ethiopia | `fm` | Micronesia | `tv` | Tuvalu |
+| `fk` | Falkland Islands | `md` | Moldova | `ug` | Uganda |
+| `fo` | Faroe Islands | `mc` | Monaco | `ua` | Ukraine |
+| `fj` | Fiji | `mn` | Mongolia | `ae` | United Arab Emirates |
+| `fi` | Finland | `me` | Montenegro | `gb` | United Kingdom |
+| `fr` | France | `ms` | Montserrat | `us` | United States |
+| `gf` | French Guiana | `ma` | Morocco | `uy` | Uruguay |
+| `pf` | French Polynesia | `mz` | Mozambique | `uz` | Uzbekistan |
+| `ga` | Gabon | `mm` | Myanmar | `vu` | Vanuatu |
+| `gm` | Gambia | `na` | Namibia | `ve` | Venezuela |
+| | | `nr` | Nauru | `vn` | Vietnam |
+| | | `np` | Nepal | `vg` | Virgin Islands (British) |
+| | | `nl` | Netherlands | `vi` | Virgin Islands (U.S.) |
+| | | `nc` | New Caledonia | `wf` | Wallis and Futuna |
+| | | `nz` | New Zealand | `ye` | Yemen |
+| | | | | `zm` | Zambia |
+| | | | | `zw` | Zimbabwe |
 
 ## 📁 Output Format
 
@@ -181,6 +305,25 @@ The scraper generates a CSV file with the following columns:
    - Check your internet connection
    - Verify the search query is valid
    - Try different language/country combinations
+
+## 🔄 Reason for Change
+
+This project was originally built using Selenium WebDriver for browser automation. While functional, it had several limitations:
+
+- **Performance**: Selenium is resource-intensive, requiring a full browser instance
+- **Reliability**: DOM changes in Google Maps frequently broke selectors
+- **Maintenance**: Browser driver compatibility issues required constant updates
+- **Speed**: Could not efficiently handle concurrent queries
+
+The new implementation uses direct HTTP requests with async/await, providing:
+
+- **Faster execution** (~10x improvement in most cases)
+- **Lower resource usage** (no browser required)
+- **Better reliability** through XPath-based parsing
+- **Three scraping modes** for different use cases:
+  - `fast`: Quick results without phone fallback
+  - `standard`: Balanced with phone fallback (default)
+  - `complete`: Thorough results with phone and address fallback
 
 ## 📝 License
 
