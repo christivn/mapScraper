@@ -91,27 +91,25 @@ def _extract_place(result, query):
     return obj
 
 
-async def _fetch_page(session, query, lang, country):
+async def _get_search_url(session, query, lang, country):
     """
-    Two-step fetch:
-      1. GET /maps/search/{query} → extract the canonical pb= search URL
-      2. GET /search?tbm=map&...&pb=... → parse )]}'-prefixed JSON
-
-    Returns list of raw place dicts, or [] on any failure.
+    Step 1: GET /maps/search/{query} and extract the canonical pb= search URL
+    from the <link> tag in the Maps SPA page.
+    Returns the full search URL string, or None on failure.
+    Called once per query; the returned URL is reused across all paginated pages.
     """
     encoded_query = quote(query)
     maps_url = f'https://www.google.com/maps/search/{encoded_query}?hl={lang}&gl={country}'
 
-    # Step 1 – Maps SPA page (just for the pb= URL in the <link> tag)
     try:
         async with session.get(maps_url, headers=HEADERS, timeout=aiohttp.ClientTimeout(total=20)) as resp:
             if resp.status != 200:
                 logger.error(f'[{query}] Maps page returned HTTP {resp.status}')
-                return []
+                return None
             html = await resp.text()
     except Exception as e:
         logger.error(f'[{query}] Failed to fetch Maps page: {e}')
-        return []
+        return None
 
     pb_match = re.search(r'href="(/search\?tbm=map[^"]+)"', html)
     if not pb_match:
@@ -120,21 +118,30 @@ async def _fetch_page(session, query, lang, country):
             f'Response may be a consent wall or bot-detection page. '
             f'HTML snippet: {html[:300]!r}'
         )
-        return []
+        return None
 
     search_path = pb_match.group(1).replace('&amp;', '&')
     search_url = 'https://www.google.com' + search_path
     logger.debug(f'[{query}] Search URL: {search_url[:120]}...')
+    return search_url
 
-    # Step 2 – JSON search results
+
+async def _fetch_results_page(session, search_url, query, start=0):
+    """
+    Step 2: Fetch one page of tbm=map results.
+    Appends &start=N to the base search URL for pages beyond the first.
+    Returns a list of place dicts, or [] when there are no more results or on error.
+    """
+    url = search_url if start == 0 else f'{search_url}&start={start}'
+
     try:
-        async with session.get(search_url, headers=HEADERS, timeout=aiohttp.ClientTimeout(total=20)) as resp:
+        async with session.get(url, headers=HEADERS, timeout=aiohttp.ClientTimeout(total=20)) as resp:
             if resp.status != 200:
-                logger.error(f'[{query}] tbm=map API returned HTTP {resp.status}')
+                logger.error(f'[{query}] tbm=map API returned HTTP {resp.status} (start={start})')
                 return []
             raw = await resp.text()
     except Exception as e:
-        logger.error(f'[{query}] Failed to fetch search results: {e}')
+        logger.error(f'[{query}] Failed to fetch search results (start={start}): {e}')
         return []
 
     # Strip the XSSI prefix )]}' that Google prepends to JSON responses
@@ -142,24 +149,23 @@ async def _fetch_page(session, query, lang, country):
         raw = raw[4:].strip()
     else:
         logger.error(
-            "[%s] Unexpected response format (missing )]}' prefix). First 80 chars: %r",
-            query, raw[:80]
+            "[%s] Unexpected response format (missing )]}' prefix) at start=%d. First 80 chars: %r",
+            query, start, raw[:80]
         )
         return []
 
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as e:
-        logger.error(f'[{query}] JSON parse error: {e}. First 200 chars: {raw[:200]!r}')
+        logger.error(f'[{query}] JSON parse error at start={start}: {e}. First 200 chars: {raw[:200]!r}')
         return []
 
     # Results live at data[64]; each entry is [None, <place-data-list>]
     results_array = _safe_get(data, 64)
     if results_array is None:
-        logger.error(
-            f'[{query}] data[64] is missing. Top-level array length: '
-            f'{len(data) if isinstance(data, list) else "N/A"}. '
-            f'Google may have changed the response structure.'
+        logger.debug(
+            f'[{query}] data[64] is missing at start={start}. '
+            f'Top-level array length: {len(data) if isinstance(data, list) else "N/A"}.'
         )
         return []
 
@@ -179,12 +185,12 @@ async def _fetch_page(session, query, lang, country):
         except Exception as e:
             logger.warning(f'[{query}] Error extracting result {i}: {e}')
 
-    logger.debug(f'[{query}] Extracted {len(places)} places from page')
+    logger.debug(f'[{query}] Extracted {len(places)} places from page (start={start})')
     return places
 
 
 async def search_async(query, lang, country, limit, semaphore):
-    """Async search with semaphore-based rate limiting."""
+    """Async search with semaphore-based rate limiting and multi-page pagination."""
     result = []
     pbar = tqdm(desc=f"Scraping '{query[:30]}'", unit='results', leave=False)
 
@@ -192,18 +198,36 @@ async def search_async(query, lang, country, limit, semaphore):
         try:
             connector = aiohttp.TCPConnector(ssl=True)
             async with aiohttp.ClientSession(connector=connector) as session:
-                places = await _fetch_page(session, query, lang, country)
+                # Step 1: resolve the pb= search URL once for all pages
+                search_url = await _get_search_url(session, query, lang, country)
+                if not search_url:
+                    logger.warning(f'[{query}] Could not obtain search URL.')
+                    pbar.set_postfix({'status': 'no-url'})
+                    pbar.close()
+                    return result
 
-                if not places:
-                    logger.warning(f'[{query}] No results returned.')
-                    pbar.set_postfix({'status': 'empty'})
-                else:
+                # Step 2: paginate — each page adds ~20 results via &start=N
+                page_size = 20
+                start = 0
+                while True:
+                    places = await _fetch_results_page(session, search_url, query, start)
+
+                    if not places:
+                        # Empty page means no more results available
+                        logger.debug(f'[{query}] Empty page at start={start}, stopping.')
+                        break
+
                     for place in places:
                         result.append(place)
                         pbar.update(1)
                         pbar.set_postfix({'Total': len(result)})
                         if limit and len(result) >= limit:
                             break
+
+                    if limit and len(result) >= limit:
+                        break
+
+                    start += page_size
 
         except Exception as e:
             logger.error(f'[{query}] Unhandled exception: {e}')
