@@ -3,7 +3,7 @@ import os
 import argparse
 import time
 from tqdm import tqdm
-import mapScraper.placesCrawlerV2 as crawler
+import mapScraper.places_crawler as crawler
 
 def read_queries_from_file(file_path):
     """Read queries from a text file"""
@@ -22,23 +22,31 @@ def read_queries_from_file(file_path):
         print(f"Error reading the file {file_path}: {e}")
         return []
 
-def process_single_query(query, lang, country, limit):
+def process_single_query(query, lang, country, limit, mode):
     """Process a single query"""
-    print(f"Processing query: '{query}'")
-    results = crawler.search(query, lang, country, limit)
+    print(f"Processing query: '{query}' (mode: {mode})")
+    results = crawler.search(query, lang, country, limit, mode)
     print(f"Found {len(results)} results for '{query}'")
     return results
 
-def process_multiple_queries(queries, lang, country, limit_per_query, max_concurrent=3):
+def process_multiple_queries(queries, lang, country, limit_per_query, max_concurrent, mode):
     """Process multiple queries concurrently"""
     total_queries = len(queries)
     
     print(f"Processing {total_queries} queries concurrently (max {max_concurrent} at a time)...")
+    print(f"Scraping mode: {mode}")
     
     start_time = time.time()
     
     # Use async search for multiple queries
-    results = crawler.search_multiple(queries, lang, country, limit_per_query, max_concurrent)
+    results = crawler.search_multiple_sync(
+        queries, 
+        lang, 
+        country, 
+        limit_per_query, 
+        max_concurrent,
+        mode
+    )
     
     elapsed_time = time.time() - start_time
     
@@ -52,9 +60,17 @@ if __name__ == "__main__":
         description="Scrape Google Maps for local services with concurrent processing.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
+Scraping Modes:
+  fast       - Main search only, no phone fallback (fastest)
+  standard   - Main search + phone fallback (recommended)
+  complete   - Main search + phone + address fallback (most thorough)
+
 Examples:
   Single query:
     python mapScraperX.py "restaurants in Miami" --limit 50
+  
+  With specific mode:
+    python mapScraperX.py "gym in vandavasi" --mode complete
   
   Multiple queries (concurrent processing by default):
     python mapScraperX.py --queries-file query_example.txt
@@ -70,9 +86,11 @@ Examples:
     
     parser.add_argument('--lang', type=str, default='en', help='Language code (e.g., en, es, fr). Default: en')
     parser.add_argument('--country', type=str, default='us', help='Country code (e.g., us, es, fr). Default: us')
-    parser.add_argument('--limit', type=int, help='Max results (total for single query, per query for file mode)')
+    parser.add_argument('--limit', type=int, default=0, help='Max results (total for single query, per query for file mode). Default: no limit')
     parser.add_argument('--output-file', type=str, default='data/output.csv', help='Output CSV file path. Default: data/output.csv')
     parser.add_argument('--concurrent', type=int, default=3, help='Max concurrent queries (default: 3, recommended: 3-5)')
+    parser.add_argument('--mode', type=str, choices=['fast', 'standard', 'complete'], default='standard', 
+                        help='Scraping mode: fast (no phone fallback), standard (skip fallback if any phone exists), complete (fallback always). Default: standard')
     
     args = parser.parse_args()
     
@@ -84,7 +102,7 @@ Examples:
     
     if args.query:
         print("Mode: Single query")
-        results = process_single_query(args.query, args.lang, args.country, args.limit)
+        results = process_single_query(args.query, args.lang, args.country, args.limit, args.mode)
     
     elif args.queries_file:
         print(f"Mode: Multiple queries from file ({args.queries_file})")
@@ -95,6 +113,7 @@ Examples:
             sys.exit(1)
         
         print(f"Concurrent processing enabled: {args.concurrent} queries at a time")
+        print(f"Scraping mode: {args.mode}")
         if args.limit:
             print(f"Limit per query: {args.limit}")
         
@@ -103,7 +122,8 @@ Examples:
             args.lang, 
             args.country, 
             args.limit,
-            max_concurrent=args.concurrent
+            max_concurrent=args.concurrent,
+            mode=args.mode
         )
     
     
@@ -112,6 +132,7 @@ Examples:
         print(f"\n{'='*50}")
         print(f"Final Summary:")
         print(f"  Total results: {len(results)}")
+        print(f"  Scraping mode: {args.mode}")
         print(f"  File saved to: {args.output_file}")
         print(f"{'='*50}")
     else:
