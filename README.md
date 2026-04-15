@@ -1,6 +1,6 @@
 ![Header](https://github.com/christivn/mapScraper/blob/main/github-header-image.png?raw=true)
 
-# Google Maps Scraper
+# 🗺️🤖 mapScraper - Google Maps Scraper
 
 A powerful Python tool for scraping Google Maps local services data. Extract detailed information about businesses and places directly from Google Maps search results.
 
