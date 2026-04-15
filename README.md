@@ -34,7 +34,7 @@ With the **Google Maps Scraper**, you can obtain detailed data about businesses 
 
 2. **Install required packages:**
    ```bash
-   pip install requests-html lxml[html_clean] urllib3
+   pip install requests-html lxml[html_clean] urllib3 phonenumbers
    ```
 
    > **Note:** If you encounter issues with `lxml`, try installing it separately:
