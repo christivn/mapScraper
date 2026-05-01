@@ -94,18 +94,18 @@ python mapScraperX.py "barber shops in Tokyo" --lang ja --country jp --limit 25 
 ### Complex query using file (for multiple queries)
 ```bash
 # Comprehensive search using query list
-python mapScraperX.py --queries-file qwuery_example.txt --lang ja --country jp --limit 25 --output-file "data/custom_name.csv"
+python mapScraperX.py --queries-file query_example.txt --lang ja --country jp --limit 25 --output-file "data/custom_name.csv"
 ```
 
 ### Concurrent query processing
 ```bash
 # When requesting for more than one query (safe):
-python mapScraperX.py --queries-file qwuery_example.txt --lang en --country jp --limit 25 --output-file "data/custom_name.csv" --concurrent 2
+python mapScraperX.py --queries-file query_example.txt --lang en --country jp --limit 25 --output-file "data/custom_name.csv" --concurrent 2
 ```
 
 ```bash
 # When requesting for more than one query (fast but risky):
-python mapScraperX.py --queries-file qwuery_example.txt --lang en --country jp --limit 25 --output-file "data/custom_name.csv" --concurrent 5
+python mapScraperX.py --queries-file query_example.txt --lang en --country jp --limit 25 --output-file "data/custom_name.csv" --concurrent 5
 ```
 
 
@@ -174,10 +174,6 @@ scraper originally used (it now returns **HTTP 410 Gone**).
 - All extraction failures now log explicit error messages so failures are never
   silent.
 
-**Known limitation:** The `tbm=map` JSON response does not include review
-counts. The `reviews` column in the output CSV will be empty. All other fields
-(id, title, category, address, phone, website, coordinates, stars) are fully
-populated.
 
 ## 📦 Installation (Updated)
 
