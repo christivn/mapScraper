@@ -280,11 +280,24 @@ def save_to_csv(data, filename='data/output.csv'):
             if col not in record:
                 record[col] = ''
 
+    seen_ids: set = set()
+    deduped = []
+    for record in data:
+        rid = record.get('id', '')
+        if rid in seen_ids:
+            continue
+        seen_ids.add(rid)
+        deduped.append(record)
+
+    removed = len(data) - len(deduped)
+    if removed:
+        print(f'Removed {removed} duplicate(s) by id.')
+
     try:
         with open(filename, 'w', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=column_order)
             writer.writeheader()
-            writer.writerows(data)
+            writer.writerows(deduped)
         print(f'Data saved to {filename}')
     except Exception as e:
         print(f'Error saving data to {filename}: {e}')
