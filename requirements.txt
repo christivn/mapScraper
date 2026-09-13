@@ -1,10 +1,12 @@
-requests-html==0.10.0
-lxml==4.9.3
-lxml_html_clean==0.1.1
-urllib3==2.0.7
-json-lib==0.5.1
-argparse==1.4.0
-tqdm == 4.67.1
-aiohttp
-asyncio
-phonenumbers
+aiohttp>=3.9.0
+beautifulsoup4>=4.12.0
+brotli>=1.1.0
+lxml>=4.9.0
+lxml_html_clean>=0.1.1
+pandas>=2.0.0
+phonenumbers>=8.13.0
+requests>=2.31.0
+requests-html>=0.10.0
+tqdm>=4.66.0
+urllib3>=2.0.0
+
