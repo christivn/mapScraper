@@ -178,6 +178,14 @@ async def _fetch_results_page(session, search_url, query, start=0):
     # Results live at data[64]; each entry is [None, <place-data-list>]
     results_array = _safe_get(data, 64)
     if results_array is None:
+        # Check if Google returned a direct single-place card instead of a multi-result list
+        single_place = _safe_get(data, 0, 1, 0, 14)
+        if single_place and isinstance(single_place, list):
+            place = _extract_place(single_place, query)
+            if place:
+                logger.debug(f'[{query}] Extracted 1 single direct place result')
+                return [place]
+
         logger.debug(
             f'[{query}] data[64] is missing at start={start}. '
             f'Top-level array length: {len(data) if isinstance(data, list) else "N/A"}.'

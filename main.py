@@ -125,6 +125,9 @@ def main() -> None:
             queries = [args.query]
         elif args.queries_file:
             queries = _read_queries(args.queries_file)
+            if not queries:
+                print(f"Error: no valid non-empty queries found in {args.queries_file}")
+                sys.exit(1)
         else:
             parser.error(f"--mode {args.mode} requires a query or --queries-file.")
 
