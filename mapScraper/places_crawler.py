@@ -464,20 +464,6 @@ async def search_single(
                         except Exception as e:
                             print(f"Failed to parse extra info for CID {item.get('cid')}: {e}")
 
-    # Tag every result with the query that produced it (used by the pipeline
-    # and by the shared CSV writer).
-    for item in unique_results:
-        item.setdefault('source_query', query)
-
-    if not unique_results:
-        print(f"Places HTML returned 0 results for '{query}', falling back to Google Maps API (placesCrawlerV2)...")
-        from mapScraper.placesCrawlerV2 import search_async
-        sem = asyncio.Semaphore(1)
-        v2_results = await search_async(query, lang, country, limit if limit > 0 else None, sem)
-        for p in v2_results:
-            p['cid'] = p.get('id', '')
-        return v2_results
-
     return unique_results
 
 

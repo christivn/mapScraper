@@ -2,10 +2,8 @@ import sys
 import os
 import argparse
 import time
-import mapScraper.placesCrawlerV2 as primary_crawler
-import mapScraper.places_crawler as fallback_crawler
-from mapScraper.normalize import normalize_search_results
-
+from tqdm import tqdm
+import mapScraper.places_crawler as crawler
 
 def read_queries_from_file(file_path):
     """Read queries from a text file"""
@@ -25,59 +23,36 @@ def read_queries_from_file(file_path):
         return []
 
 def process_single_query(query, lang, country, limit, mode):
-    """Process a single query — internal API first, Google Search results as fallback."""
+    """Process a single query"""
     print(f"Processing query: '{query}' (mode: {mode})")
-    results = primary_crawler.search(query, lang, country, limit)
-
-    if not results:
-        print(f"Internal API returned 0 results for '{query}', falling back to Google Search results...")
-        results = normalize_search_results(fallback_crawler.search(query, lang, country, limit, mode))
-
+    results = crawler.search(query, lang, country, limit, mode)
     print(f"Found {len(results)} results for '{query}'")
     return results
 
 def process_multiple_queries(queries, lang, country, limit_per_query, max_concurrent, mode):
-    """Process multiple queries concurrently — internal API first, Google Search results as fallback."""
+    """Process multiple queries concurrently"""
     total_queries = len(queries)
-
+    
     print(f"Processing {total_queries} queries concurrently (max {max_concurrent} at a time)...")
     print(f"Scraping mode: {mode}")
-
+    
     start_time = time.time()
-
-    # Primary source: Google's internal Maps API (placesCrawlerV2)
-    results = primary_crawler.search_multiple(
-        queries,
-        lang,
-        country,
-        limit_per_query,
-        max_concurrent
+    
+    # Use async search for multiple queries
+    results = crawler.search_multiple_sync(
+        queries, 
+        lang, 
+        country, 
+        limit_per_query, 
+        max_concurrent,
+        mode
     )
-
-    # Fallback: retry queries that returned nothing via Google Search results
-    served = {q: 0 for q in queries}
-    for row in results:
-        if row.get('source_query') in served:
-            served[row['source_query']] += 1
-
-    failed = [q for q in queries if served[q] == 0]
-    if failed:
-        print(f"Internal API returned no results for {len(failed)}/{total_queries} queries — falling back to Google Search results...")
-        fallback_results = fallback_crawler.search_multiple_sync(
-            failed,
-            lang,
-            country,
-            limit_per_query,
-            max_concurrent,
-            mode
-        )
-        results.extend(normalize_search_results(fallback_results))
-
+    
     elapsed_time = time.time() - start_time
-
+    
     print(f"\nCompleted in {elapsed_time:.2f} seconds")
     print(f"Average time per query: {elapsed_time/total_queries:.2f} seconds")
-
+    
     return results
 
 if __name__ == "__main__":
@@ -85,11 +60,7 @@ if __name__ == "__main__":
         description="Scrape Google Maps for local services with concurrent processing.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Scraping Sources:
-  Primary    - Google's internal Maps API (reliable, structured data)
-  Fallback   - Google Search results, used per query when the API returns nothing
-
-Scraping Modes (applied to the fallback path):
+Scraping Modes:
   fast       - Main search only, no phone fallback (fastest)
   standard   - Main search + phone fallback (recommended)
   complete   - Main search + phone + address fallback (most thorough)
@@ -129,8 +100,6 @@ Examples:
         os.makedirs(output_dir)
     
     
-    results = []
-
     if args.query:
         print("Mode: Single query")
         results = process_single_query(args.query, args.lang, args.country, args.limit, args.mode)
@@ -159,7 +128,7 @@ Examples:
     
     
     if results:
-        primary_crawler.save_to_csv(results, args.output_file)
+        crawler.save_to_csv(results, args.output_file)
         print(f"\n{'='*50}")
         print(f"Final Summary:")
         print(f"  Total results: {len(results)}")
