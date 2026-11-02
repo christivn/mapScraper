@@ -84,11 +84,37 @@ def _run_scraper(
     max_concurrent: int,
 ) -> None:
     import mapScraper.placesCrawlerV2 as crawler
+    import mapScraper.places_crawler as search_crawler
+    from mapScraper.normalize import normalize_search_results
 
     logger.info("Scraping %d queries → %s", len(queries), output_file)
     _ensure_dir(output_file)
 
+    # Primary source: Google's internal Maps API (placesCrawlerV2).
     results = crawler.search_multiple(queries, lang, country, limit, max_concurrent)
+
+    # Fallback: retry queries that returned nothing via Google Search results.
+    served = {q: 0 for q in queries}
+    for row in results:
+        if row.get('source_query') in served:
+            served[row['source_query']] += 1
+
+    failed = [q for q in queries if served[q] == 0]
+    if failed:
+        logger.info(
+            "Internal API returned no results for %d/%d queries — "
+            "falling back to Google Search results.",
+            len(failed), len(queries),
+        )
+        fallback_rows = search_crawler.search_multiple(
+            failed,
+            lang=lang,
+            country=country,
+            limit_per_query=limit or 0,
+            max_concurrent=max_concurrent,
+        )
+        results.extend(normalize_search_results(fallback_rows))
+
     if not results:
         logger.warning("Scraper returned 0 results.")
     crawler.save_to_csv(results, output_file)
