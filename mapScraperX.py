@@ -99,7 +99,7 @@ Examples:
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
-    
+    results=[]
     if args.query:
         print("Mode: Single query")
         results = process_single_query(args.query, args.lang, args.country, args.limit, args.mode)

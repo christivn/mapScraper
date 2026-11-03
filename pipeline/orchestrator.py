@@ -44,6 +44,27 @@ def _enriched_path(raw_path: str) -> str:
 
 def _load_csv(path: str) -> pd.DataFrame:
     df = pd.read_csv(path, dtype=str)
+
+    # Backward compatibility: map legacy columns from older scraper versions
+    aliases = {
+        'gmap_url': 'url_place',
+        'website': 'url',
+    }
+    for old_col, new_col in aliases.items():
+        if old_col in df.columns and new_col not in df.columns:
+            df[new_col] = df[old_col]
+
+    if 'domain' not in df.columns and 'url' in df.columns:
+        from urllib.parse import urlparse
+        df['domain'] = df['url'].fillna('').apply(lambda u: urlparse(u).netloc if u else '')
+
+    if 'completePhoneNumber' not in df.columns and 'phoneNumber' in df.columns:
+        df['completePhoneNumber'] = df['phoneNumber']
+
+    for col in ['coor', 'source_query', 'phoneNumber', 'completePhoneNumber', 'domain', 'url']:
+        if col not in df.columns:
+            df[col] = ''
+
     missing = [c for c in _REQUIRED_COLUMNS if c not in df.columns]
     if missing:
         raise ValueError(

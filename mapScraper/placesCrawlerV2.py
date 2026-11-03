@@ -128,10 +128,26 @@ async def _get_search_url(session, query, lang, country):
 async def _fetch_results_page(session, search_url, query, start=0):
     """
     Step 2: Fetch one page of tbm=map results.
-    Appends &start=N to the base search URL for pages beyond the first.
+    Injects !8i{start} into the protobuf parameter for pages beyond the first.
     Returns a list of place dicts, or [] when there are no more results or on error.
     """
-    url = search_url if start == 0 else f'{search_url}&start={start}'
+    if start == 0:
+        url = search_url
+    else:
+        if '%217i20' in search_url:
+            url = search_url.replace('%217i20', f'%217i20%218i{start}')
+        elif '!7i20' in search_url:
+            url = search_url.replace('!7i20', f'!7i20!8i{start}')
+        elif '%218i' in search_url:
+            url = re.sub(r'(%218i)\d+', f'%218i{start}', search_url)
+        elif '!8i' in search_url:
+            url = re.sub(r'(!8i)\d+', f'!8i{start}', search_url)
+        elif '%217i' in search_url:
+            url = re.sub(r'(%217i\d+)', rf'\1%218i{start}', search_url)
+        elif '!7i' in search_url:
+            url = re.sub(r'(!7i\d+)', rf'\1!8i{start}', search_url)
+        else:
+            url = f'{search_url}&start={start}'
 
     try:
         async with session.get(url, headers=HEADERS, timeout=aiohttp.ClientTimeout(total=20)) as resp:
@@ -162,6 +178,14 @@ async def _fetch_results_page(session, search_url, query, start=0):
     # Results live at data[64]; each entry is [None, <place-data-list>]
     results_array = _safe_get(data, 64)
     if results_array is None:
+        # Check if Google returned a direct single-place card instead of a multi-result list
+        single_place = _safe_get(data, 0, 1, 0, 14)
+        if single_place and isinstance(single_place, list):
+            place = _extract_place(single_place, query)
+            if place:
+                logger.debug(f'[{query}] Extracted 1 single direct place result')
+                return [place]
+
         logger.debug(
             f'[{query}] data[64] is missing at start={start}. '
             f'Top-level array length: {len(data) if isinstance(data, list) else "N/A"}.'
@@ -191,7 +215,7 @@ async def _fetch_results_page(session, search_url, query, start=0):
 async def search_async(query, lang, country, limit, semaphore):
     """Async search with semaphore-based rate limiting and multi-page pagination."""
     result = []
-    pbar = tqdm(desc=f"Scraping '{query[:30]}'", unit='results', leave=False)
+    pbar = tqdm(desc=f"Scraping '{query[:30]+ "..." if len(query)>30 else ""}'", unit='results', leave=False)
 
     async with semaphore:
         try:
@@ -205,9 +229,10 @@ async def search_async(query, lang, country, limit, semaphore):
                     pbar.close()
                     return result
 
-                # Step 2: paginate — each page adds ~20 results via &start=N
+                # Step 2: paginate — each page adds ~20 results via !8i{start}
                 page_size = 20
                 start = 0
+                seen_query_ids = set()
                 while True:
                     places = await _fetch_results_page(session, search_url, query, start)
 
@@ -216,7 +241,13 @@ async def search_async(query, lang, country, limit, semaphore):
                         logger.debug(f'[{query}] Empty page at start={start}, stopping.')
                         break
 
-                    for place in places:
+                    new_places = [p for p in places if p.get('id') and p['id'] not in seen_query_ids]
+                    if not new_places:
+                        logger.debug(f'[{query}] No new places found at start={start}, stopping.')
+                        break
+
+                    for place in new_places:
+                        seen_query_ids.add(place['id'])
                         result.append(place)
                         pbar.update(1)
                         pbar.set_postfix({'Total': len(result)})
@@ -245,7 +276,7 @@ async def search_multiple_async(queries, lang, country, limit, max_concurrent=3)
 
     all_results = []
     for i, result in enumerate(results):
-        if isinstance(result, Exception):
+        if isinstance(result, BaseException):
             logger.error(f"Error in query '{queries[i]}': {result}")
         else:
             all_results.extend(result)

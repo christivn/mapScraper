@@ -463,7 +463,7 @@ async def search_single(
                                 item['url'] = extra_info['website']
                         except Exception as e:
                             print(f"Failed to parse extra info for CID {item.get('cid')}: {e}")
-    
+
     return unique_results
 
 
@@ -539,12 +539,14 @@ def save_to_csv(results: List[Dict], filename: str = 'data/output.csv'):
         
         for item in results:
             phone_numbers = item.get('phone_numbers', [])
-            primary_phone = item.get('completePhoneNumber', '')
+            primary_phone = item.get('completePhoneNumber') or item.get('phoneNumber', '')
             additional = [p for p in phone_numbers if p != primary_phone]
+            item_id = item.get('cid') or item.get('id', '')
+            gmap_url = item.get('url_place') or (f"https://www.google.com/maps?cid={item_id}" if item_id else '')
 
             row = {
-                'id': item.get('cid', ''),
-                'gmap_url': f"https://www.google.com/maps?cid={item.get('cid', '')}" if item.get('cid') else '',
+                'id': item_id,
+                'gmap_url': gmap_url,
                 'title': item.get('title', ''),
                 'category': item.get('category', ''),
                 'address': item.get('address', ''),
