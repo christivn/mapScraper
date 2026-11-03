@@ -80,7 +80,7 @@ async def _fetch(session: aiohttp.ClientSession, url: str, timeout: int) -> str 
 
 def _analyze(html: str) -> Dict:
     if _BS4_AVAILABLE:
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, 'html.parser') # type: ignore
         text = soup.get_text(separator=' ', strip=True).lower()
     else:
         # Fallback: strip tags with regex

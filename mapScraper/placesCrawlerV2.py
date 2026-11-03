@@ -215,7 +215,7 @@ async def _fetch_results_page(session, search_url, query, start=0):
 async def search_async(query, lang, country, limit, semaphore):
     """Async search with semaphore-based rate limiting and multi-page pagination."""
     result = []
-    pbar = tqdm(desc=f"Scraping '{query[:30]}'", unit='results', leave=False)
+    pbar = tqdm(desc=f"Scraping '{query[:30]+ "..." if len(query)>30 else ""}'", unit='results', leave=False)
 
     async with semaphore:
         try:
@@ -276,7 +276,7 @@ async def search_multiple_async(queries, lang, country, limit, max_concurrent=3)
 
     all_results = []
     for i, result in enumerate(results):
-        if isinstance(result, Exception):
+        if isinstance(result, BaseException):
             logger.error(f"Error in query '{queries[i]}': {result}")
         else:
             all_results.extend(result)
